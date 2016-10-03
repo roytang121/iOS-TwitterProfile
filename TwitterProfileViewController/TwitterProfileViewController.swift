@@ -80,7 +80,7 @@ class TwitterProfileViewController: UIViewController {
 extension TwitterProfileViewController {
   
   func prepareViews() {
-    let _mainScrollView = UIScrollView(frame: self.view.bounds)
+    let _mainScrollView = TouchRespondScrollView(frame: self.view.bounds)
     _mainScrollView.delegate = self
     _mainScrollView.showsHorizontalScrollIndicator = false
     
@@ -213,7 +213,6 @@ extension TwitterProfileViewController {
   
   func computeSegmentedControlContainerFrame() -> CGRect {
     let rect = computeProfileHeaderViewFrame()
-    self.segmentedControl.sizeToFit()
     return CGRect(x: 0, y: rect.origin.y + rect.height, width: mainScrollView.bounds.width, height: segmentedControlContainerHeight)
     
   }
@@ -258,43 +257,44 @@ extension TwitterProfileViewController: UIScrollViewDelegate {
     let scaleProgress = max(0, min(1, contentOffset.y / self.scrollToScaleDownProfileIconDistance))
     self.profileHeaderView.animator(t: scaleProgress)
     
+    if contentOffset.y > 0 {
     
-    // When scroll View reached the threshold
-    if contentOffset.y >= scrollToScaleDownProfileIconDistance {
-      self.stickyHeaderContainerView.frame = CGRect(x: 0, y: contentOffset.y - scrollToScaleDownProfileIconDistance, width: mainScrollView.bounds.width, height: stickyheaderContainerViewHeight)
+      // When scroll View reached the threshold
+      if contentOffset.y >= scrollToScaleDownProfileIconDistance {
+        self.stickyHeaderContainerView.frame = CGRect(x: 0, y: contentOffset.y - scrollToScaleDownProfileIconDistance, width: mainScrollView.bounds.width, height: stickyheaderContainerViewHeight)
+        
+        // bring stickyHeader to the front
+        self.mainScrollView.bringSubview(toFront: self.stickyHeaderContainerView)
+      } else if contentOffset.y > 0 {
+        self.mainScrollView.bringSubview(toFront: self.profileHeaderView)
+        self.stickyHeaderContainerView.frame = computeStickyHeaderContainerViewFrame()
+      }
       
-      // bring stickyHeader to the front
-      self.mainScrollView.bringSubview(toFront: self.stickyHeaderContainerView)
-    } else if contentOffset.y > 0 {
-      self.mainScrollView.bringSubview(toFront: self.profileHeaderView)
-      self.stickyHeaderContainerView.frame = computeStickyHeaderContainerViewFrame()
-    }
-    
-    // Sticky Segmented Control
-    let navigationLocation = CGRect(x: 0, y: 0, width: stickyHeaderContainerView.bounds.width, height: stickyHeaderContainerView.frame.origin.y - contentOffset.y + stickyHeaderContainerView.bounds.height)
-    let navigationHeight = navigationLocation.height - abs(navigationLocation.origin.y)
-    let segmentedControlContainerLocationY = stickyheaderContainerViewHeight + profileHeaderViewHeight - navigationHeight
-    
-    if contentOffset.y > 0 && contentOffset.y >= segmentedControlContainerLocationY {
-//    if segmentedControlLocation.origin.y <= navigationHeight {
-      segmentedControlContainer.frame = CGRect(x: 0, y: contentOffset.y + navigationHeight, width: segmentedControlContainer.bounds.width, height: segmentedControlContainer.bounds.height)
-    } else {
-      segmentedControlContainer.frame = computeSegmentedControlContainerFrame()
-    }
-    
-    // Override
-    // When scroll View reached the top edge of Title label
-    if let titleLabel = profileHeaderView.titleLabel, let usernameLabel = profileHeaderView.usernameLabel  {
+      // Sticky Segmented Control
+      let navigationLocation = CGRect(x: 0, y: 0, width: stickyHeaderContainerView.bounds.width, height: stickyHeaderContainerView.frame.origin.y - contentOffset.y + stickyHeaderContainerView.bounds.height)
+      let navigationHeight = navigationLocation.height - abs(navigationLocation.origin.y)
+      let segmentedControlContainerLocationY = stickyheaderContainerViewHeight + profileHeaderViewHeight - navigationHeight
       
-      // titleLabel location relative to self.view
-      let titleLabelLocationY = stickyheaderContainerViewHeight - 35
+      if contentOffset.y > 0 && contentOffset.y >= segmentedControlContainerLocationY {
+  //    if segmentedControlLocation.origin.y <= navigationHeight {
+        segmentedControlContainer.frame = CGRect(x: 0, y: contentOffset.y + navigationHeight, width: segmentedControlContainer.bounds.width, height: segmentedControlContainer.bounds.height)
+      } else {
+        segmentedControlContainer.frame = computeSegmentedControlContainerFrame()
+      }
       
-      let totalHeight = titleLabel.bounds.height + usernameLabel.bounds.height + 35
-      let detailProgress = max(0, min((contentOffset.y - titleLabelLocationY) / totalHeight, 1))
-      blurEffectView.alpha = detailProgress
-      animateNaivationTitleAt(progress: detailProgress)
+      // Override
+      // When scroll View reached the top edge of Title label
+      if let titleLabel = profileHeaderView.titleLabel, let usernameLabel = profileHeaderView.usernameLabel  {
+        
+        // titleLabel location relative to self.view
+        let titleLabelLocationY = stickyheaderContainerViewHeight - 35
+        
+        let totalHeight = titleLabel.bounds.height + usernameLabel.bounds.height + 35
+        let detailProgress = max(0, min((contentOffset.y - titleLabelLocationY) / totalHeight, 1))
+        blurEffectView.alpha = detailProgress
+        animateNaivationTitleAt(progress: detailProgress)
+      }
     }
-    
     // Segmented control is always on top in any situations
     self.mainScrollView.bringSubview(toFront: segmentedControlContainer)
   }

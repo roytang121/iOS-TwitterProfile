@@ -8,6 +8,8 @@
 
 /* Begin PBXBuildFile section */
 		A2ADCFAA1DA172FE002AFF3D /* background3.png in Resources */ = {isa = PBXBuildFile; fileRef = A2ADCFA91DA172FE002AFF3D /* background3.png */; };
+		A2ADCFAC1DA2725C002AFF3D /* RoundButton.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2ADCFAB1DA2725C002AFF3D /* RoundButton.swift */; };
+		A2ADCFAE1DA2843F002AFF3D /* TouchRespondScrollView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2ADCFAD1DA2843F002AFF3D /* TouchRespondScrollView.swift */; };
 		A2C111111D9FF374006AF3AC /* background.png in Resources */ = {isa = PBXBuildFile; fileRef = A2C111101D9FF374006AF3AC /* background.png */; };
 		A2DDAA221D9EA9AE008D0461 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2DDAA211D9EA9AE008D0461 /* AppDelegate.swift */; };
 		A2DDAA241D9EA9AE008D0461 /* TwitterProfileViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2DDAA231D9EA9AE008D0461 /* TwitterProfileViewController.swift */; };
@@ -26,6 +28,8 @@
 		08E6FD3B5906C869835E60F4 /* Pods-TwitterProfileViewController.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwitterProfileViewController.debug.xcconfig"; path = "Pods/Target Support Files/Pods-TwitterProfileViewController/Pods-TwitterProfileViewController.debug.xcconfig"; sourceTree = "<group>"; };
 		4F212DBD9D26A57D74A57F77 /* Pods-TwitterProfileViewController.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-TwitterProfileViewController.release.xcconfig"; path = "Pods/Target Support Files/Pods-TwitterProfileViewController/Pods-TwitterProfileViewController.release.xcconfig"; sourceTree = "<group>"; };
 		A2ADCFA91DA172FE002AFF3D /* background3.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = background3.png; sourceTree = "<group>"; };
+		A2ADCFAB1DA2725C002AFF3D /* RoundButton.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = RoundButton.swift; sourceTree = "<group>"; };
+		A2ADCFAD1DA2843F002AFF3D /* TouchRespondScrollView.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = TouchRespondScrollView.swift; sourceTree = "<group>"; };
 		A2C111101D9FF374006AF3AC /* background.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = background.png; sourceTree = "<group>"; };
 		A2DDAA1E1D9EA9AE008D0461 /* TwitterProfileViewController.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = TwitterProfileViewController.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		A2DDAA211D9EA9AE008D0461 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
@@ -110,6 +114,8 @@
 				A2DDAA381D9EF277008D0461 /* TwitterProfileHeaderView.swift */,
 				A2DDAA3C1D9EF2B4008D0461 /* TwitterProfileHeaderView.xib */,
 				A2DDAA401D9FD39D008D0461 /* ProfileIconView.swift */,
+				A2ADCFAB1DA2725C002AFF3D /* RoundButton.swift */,
+				A2ADCFAD1DA2843F002AFF3D /* TouchRespondScrollView.swift */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -243,9 +249,11 @@
 			buildActionMask = 2147483647;
 			files = (
 				A2DDAA411D9FD39D008D0461 /* ProfileIconView.swift in Sources */,
+				A2ADCFAC1DA2725C002AFF3D /* RoundButton.swift in Sources */,
 				A2DDAA241D9EA9AE008D0461 /* TwitterProfileViewController.swift in Sources */,
 				A2DDAA221D9EA9AE008D0461 /* AppDelegate.swift in Sources */,
 				A2DDAA391D9EF277008D0461 /* TwitterProfileHeaderView.swift in Sources */,
+				A2ADCFAE1DA2843F002AFF3D /* TouchRespondScrollView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
