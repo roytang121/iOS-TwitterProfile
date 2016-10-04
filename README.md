@@ -1,6 +1,8 @@
 ![iOS-TwitterProfile](https://github.com/roytang121/iOS-TwitterProfile/blob/master/img/twitterProfile.png?raw=true)
 
 A complete guide to implement the Twitter iOS App Profile UI in Swift.  This project mimics the elegant Twitter Profile User Interface design on iOS with a detailed guide of how I implemented each feature.
+> This may not (and most probably not) be the same way as the Twitter app actually implements. I am just using my own way trying to mimic their user interface.
+
 
 
 ## Preview
