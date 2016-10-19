@@ -9,7 +9,7 @@ A complete guide to implement the Twitter iOS App Profile UI in Swift.  This pro
 ![Video Demo](https://github.com/roytang121/iOS-TwitterProfile/blob/master/img/screencap_1.gif?raw=true)
 
 ## Implementation guide
-I shared a blog on [Medium talking about that design concepts of this project](https://medium.com/@yipyipisyip/swift-%EF%B8%8F-implementing-twitter-ios-app-ui-74c8a8cd0ff3).
+I shared a blog on [Medium talking about the design concepts of this project](https://medium.com/@yipyipisyip/swift-%EF%B8%8F-implementing-twitter-ios-app-ui-74c8a8cd0ff3).
 
 ## Features
 - Sticky Profile Header with interactive blurring animation
