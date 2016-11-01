@@ -9,41 +9,61 @@
 import UIKit
 import SnapKit
 
-class TwitterProfileViewController: UIViewController {
+open class TwitterProfileViewController: UIViewController {
   
   // Constants
-  let stickyheaderContainerViewHeight: CGFloat = 125
+  open let stickyheaderContainerViewHeight: CGFloat = 125
   
-  let bouncingThreshold: CGFloat = 100
+  open let bouncingThreshold: CGFloat = 100
   
-  let scrollToScaleDownProfileIconDistance: CGFloat = 60
+  open let scrollToScaleDownProfileIconDistance: CGFloat = 60
   
-  let profileHeaderViewHeight: CGFloat = 160
+  open let profileHeaderViewHeight: CGFloat = 160
   
-  let segmentedControlContainerHeight: CGFloat = 46
+  open let segmentedControlContainerHeight: CGFloat = 46
+  
+  open var username: String? {
+    didSet {
+      self.profileHeaderView?.titleLabel?.text = username
+      
+      self.navigationTitleLabel?.text = username
+    }
+  }
+  
+  open var profileImage: UIImage? {
+    didSet {
+      self.profileHeaderView?.iconImageView?.image = profileImage
+    }
+  }
+  
+  open var locationString: String? {
+    didSet {
+      self.profileHeaderView?.locationLabel?.text = locationString
+    }
+  }
+  
+  open var coverImage: UIImage? {
+    didSet {
+      self.headerCoverView?.image = coverImage
+    }
+  }
   
   // Properties
   
-  enum TableViewContentType: Int {
-    case tweets = 0, photos = 1, favorites = 2
+  var currentIndex: Int = 0 {
+    didSet {
+      self.updateTableViewContent()
+    }
   }
   
-  var contentType: TableViewContentType = .tweets {
-    didSet { self.updateTableViewContent() }
-  }
+  var scrollViews: [UIScrollView] = []
   
-  var currentTableView: UITableView {
-    switch contentType {
-    case .tweets:
-      return self.tweetTableView
-    case .photos:
-      return self.photosTableView
-    case .favorites:
-      return self.favoritesTableView    }
+  var currentScrollView: UIScrollView {
+    return scrollViews[currentIndex]
   }
   
   
-  var mainScrollView: UIScrollView!
+  fileprivate var mainScrollView: UIScrollView!
   
   var headerCoverView: UIImageView!
   
@@ -53,33 +73,39 @@ class TwitterProfileViewController: UIViewController {
   
   var blurEffectView: UIVisualEffectView!
   
-  var tweetTableView: UITableView!
-  var photosTableView: UITableView!
-  var favoritesTableView: UITableView!
-  
   var segmentedControl: UISegmentedControl!
   
   var segmentedControlContainer: UIView!
   
+  var navigationTitleLabel: UILabel!
   var navigationDetailLabel: UILabel!
   
   var debugTextView: UILabel!
   
   var shouldUpdateScrollViewContentFrame = false
+  
+  deinit {
+    self.scrollViews.forEach { (scrollView) in
+      scrollView.removeFromSuperview()
+    }
+    self.scrollViews.removeAll()
+    
+    print("[TwitterProfileViewController] memeory leak check passed")
+  }
 
-  override func viewDidLoad() {
+  override open func viewDidLoad() {
     super.viewDidLoad()
+    
+    self.prepareForLayout()
     
     setNeedsStatusBarAppearanceUpdate()
     
     self.prepareViews()
     
-    self.setupTables()
-    
     shouldUpdateScrollViewContentFrame = true
   }
   
-  override func viewDidLayoutSubviews() {
+  override open func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
     if self.shouldUpdateScrollViewContentFrame {
@@ -90,19 +116,20 @@ class TwitterProfileViewController: UIViewController {
       
       self.segmentedControlContainer.frame = self.computeSegmentedControlContainerFrame()
       
-      self.tweetTableView.frame = self.computeTableViewFrame(tableView: tweetTableView)
-      self.photosTableView.frame = self.computeTableViewFrame(tableView: photosTableView)
-      self.favoritesTableView.frame = self.computeTableViewFrame(tableView: favoritesTableView)
+      self.scrollViews.forEach({ (scrollView) in
+        scrollView.frame = self.computeTableViewFrame(tableView: scrollView)
+      })
       
       self.updateMainScrollViewFrame()
       
       self.mainScrollView.scrollIndicatorInsets = computeMainScrollViewIndicatorInsets()
       
+      
       self.shouldUpdateScrollViewContentFrame = false
     }
   }
 
-  override func didReceiveMemoryWarning() {
+  override open func didReceiveMemoryWarning() {
     super.didReceiveMemoryWarning()
     
   }
@@ -167,7 +194,7 @@ extension TwitterProfileViewController {
     
     // Navigation Title
     let _navigationTitleLabel = UILabel()
-    _navigationTitleLabel.text = "Roy Tang"
+    _navigationTitleLabel.text = self.username ?? "{username}"
     _navigationTitleLabel.textColor = UIColor.white
     _navigationTitleLabel.font = UIFont.boldSystemFont(ofSize: 17.0)
     _stickyHeaderContainer.addSubview(_navigationTitleLabel)
@@ -175,6 +202,7 @@ extension TwitterProfileViewController {
       make.centerX.equalTo(_stickyHeaderContainer.snp.centerX)
       make.bottom.equalTo(_navigationDetailLabel.snp.top).offset(4)
     }
+    self.navigationTitleLabel = _navigationTitleLabel
     
     // preset the navigation title and detail at progress=0 position
     animateNaivationTitleAt(progress: 0)
@@ -183,6 +211,10 @@ extension TwitterProfileViewController {
     if let _profileHeaderView = Bundle.main.loadNibNamed("TwitterProfileHeaderView", owner: self, options: nil)?.first as? TwitterProfileHeaderView {
       _mainScrollView.addSubview(_profileHeaderView)
       self.profileHeaderView = _profileHeaderView
+      
+      self.profileHeaderView.usernameLabel.text = self.username
+      self.profileHeaderView.locationLabel.text = self.locationString
+      self.profileHeaderView.iconImageView.image = self.profileImage
     }
     
     
@@ -197,9 +229,10 @@ extension TwitterProfileViewController {
     _segmentedControl.addTarget(self, action: #selector(self.segmentedControlValueDidChange(sender:)), for: .valueChanged)
     _segmentedControl.backgroundColor = UIColor.white
 
-    _segmentedControl.insertSegment(withTitle: "Tweets", at: 0, animated: false)
-    _segmentedControl.insertSegment(withTitle: "Photos", at: 1, animated: false)
-    _segmentedControl.insertSegment(withTitle: "Favorites", at: 2, animated: false)
+    for index in 0..<numberOfSegments() {
+      let segmentTitle = self.segmentTitle(forSegment: index)
+      _segmentedControl.insertSegment(withTitle: segmentTitle, at: index, animated: false)
+    }
     _segmentedControl.selectedSegmentIndex = 0
     _segmentedControlContainer.addSubview(_segmentedControl)
 
@@ -212,37 +245,14 @@ extension TwitterProfileViewController {
       make.centerY.equalTo(_segmentedControlContainer.snp.centerY)
     }
     
-    
-    // TableViews
-    let _tweetTableView = UITableView(frame: _mainScrollView.bounds, style: .plain)
-    _mainScrollView.addSubview(_tweetTableView)
-    self.tweetTableView = _tweetTableView
-    
-    let _photosTableView = UITableView(frame: _mainScrollView.bounds, style: .plain)
-    _mainScrollView.addSubview(_photosTableView)
-    self.photosTableView = _photosTableView
-    
-    let _favoritesTableView = UITableView(frame: _mainScrollView.bounds, style: .plain)
-    _mainScrollView.addSubview(_favoritesTableView)
-    self.favoritesTableView = _favoritesTableView
+    self.scrollViews = []
+    for index in 0..<numberOfSegments() {
+      let scrollView = self.scrollView(forSegment: index)
+      self.scrollViews.append(scrollView)
+      _mainScrollView.addSubview(scrollView)
+    }
     
     self.showDebugInfo()
-  }
-  
-  func setupTables() {
-    self.tweetTableView.delegate = self
-    self.tweetTableView.dataSource = self
-    self.tweetTableView.register(UITableViewCell.self, forCellReuseIdentifier: "tweetCell")
-    
-    self.photosTableView.delegate = self
-    self.photosTableView.dataSource = self
-    self.photosTableView.isHidden = true
-    self.photosTableView.register(UITableViewCell.self, forCellReuseIdentifier: "photoCell")
-    
-    self.favoritesTableView.delegate = self
-    self.favoritesTableView.dataSource = self
-    self.favoritesTableView.isHidden = true
-    self.favoritesTableView.register(UITableViewCell.self, forCellReuseIdentifier: "favCell")
   }
   
   func computeStickyHeaderContainerViewFrame() -> CGRect {
@@ -253,13 +263,13 @@ extension TwitterProfileViewController {
     return CGRect(x: 0, y: computeStickyHeaderContainerViewFrame().origin.y + stickyheaderContainerViewHeight, width: mainScrollView.bounds.width, height: profileHeaderViewHeight)
   }
   
-  func computeTableViewFrame(tableView: UITableView) -> CGRect {
+  func computeTableViewFrame(tableView: UIScrollView) -> CGRect {
     let upperViewFrame = computeSegmentedControlContainerFrame()
     return CGRect(x: 0, y: upperViewFrame.origin.y + upperViewFrame.height , width: mainScrollView.bounds.width, height: tableView.contentSize.height)
   }
   
   func computeMainScrollViewIndicatorInsets() -> UIEdgeInsets {
-    return UIEdgeInsetsMake(self.computeSegmentedControlContainerFrame().originBottom, 0, 0, 0)
+    return UIEdgeInsetsMake(self.computeSegmentedControlContainerFrame().lf_originBottom, 0, 0, 0)
   }
   
   func computeNavigationFrame() -> CGRect {
@@ -274,7 +284,7 @@ extension TwitterProfileViewController {
   
   func updateMainScrollViewFrame() {
     
-    let bottomHeight = max(currentTableView.bounds.height, 800)
+    let bottomHeight = max(currentScrollView.bounds.height, 800)
     
     self.mainScrollView.contentSize = CGSize(
       width: view.bounds.width,
@@ -283,7 +293,7 @@ extension TwitterProfileViewController {
 }
 
 extension TwitterProfileViewController: UIScrollViewDelegate {
-  func scrollViewDidScroll(_ scrollView: UIScrollView) {
+  open func scrollViewDidScroll(_ scrollView: UIScrollView) {
     
     let contentOffset = scrollView.contentOffset
     self.debugContentOffset(contentOffset: contentOffset)
@@ -313,6 +323,8 @@ extension TwitterProfileViewController: UIScrollViewDelegate {
       var baseInset = computeMainScrollViewIndicatorInsets()
       baseInset.top += abs(contentOffset.y)
       self.mainScrollView.scrollIndicatorInsets = baseInset
+      
+      self.mainScrollView.bringSubview(toFront: self.profileHeaderView)
     } else {
       
       // anything to be set if contentOffset.y is positive
@@ -387,47 +399,9 @@ extension TwitterProfileViewController {
   }
 }
 
-// MARK: UITableViewDelegates & DataSources
-extension TwitterProfileViewController: UITableViewDelegate, UITableViewDataSource {
-  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-    switch tableView {
-    case self.tweetTableView:
-      return 30
-    case self.photosTableView:
-      return 10
-    case self.favoritesTableView:
-      return 0
-    default:
-      return 10
-    }
-  }
-  
-  func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-    switch tableView {
-    case self.tweetTableView:
-      let cell = tableView.dequeueReusableCell(withIdentifier: "tweetCell", for: indexPath)
-      cell.textLabel?.text = "Row \(indexPath.row)"
-      return cell
-      
-    case self.photosTableView:
-      let cell = tableView.dequeueReusableCell(withIdentifier: "photoCell", for: indexPath)
-      cell.textLabel?.text = "Photo \(indexPath.row)"
-      return cell
-      
-    case self.favoritesTableView:
-      let cell = tableView.dequeueReusableCell(withIdentifier: "favCell", for: indexPath)
-      cell.textLabel?.text = "Fav \(indexPath.row)"
-      return cell
-      
-    default:
-      return UITableViewCell()
-    }
-  }
-}
-
 // status bar style override
 extension TwitterProfileViewController {
-  override var preferredStatusBarStyle: UIStatusBarStyle {
+  override open var preferredStatusBarStyle: UIStatusBarStyle {
     return .lightContent
   }
 }
@@ -436,24 +410,24 @@ extension TwitterProfileViewController {
 
 extension TwitterProfileViewController {
   func updateTableViewContent() {
-    print("contentType did changed \(self.contentType)")
+    print("currentIndex did changed \(self.currentIndex)")
   }
   
   internal func segmentedControlValueDidChange(sender: AnyObject?) {
-    self.contentType = TableViewContentType(rawValue: self.segmentedControl.selectedSegmentIndex)!
+    self.currentIndex = self.segmentedControl.selectedSegmentIndex
     
-    let tableViewToBeShown: UITableView! = self.currentTableView
+    let scrollViewToBeShown: UIScrollView! = self.currentScrollView
     
-    [tweetTableView, photosTableView, favoritesTableView].forEach { (tableView) in
-      tableView?.isHidden = tableView != tableViewToBeShown
+    self.scrollViews.forEach { (scrollView) in
+      scrollView?.isHidden = scrollView != scrollViewToBeShown
     }
     
-    tableViewToBeShown.frame = self.computeTableViewFrame(tableView: tableViewToBeShown)
+    scrollViewToBeShown.frame = self.computeTableViewFrame(tableView: scrollViewToBeShown)
     self.updateMainScrollViewFrame()
     
     // auto scroll to top if mainScrollView.contentOffset > navigationHeight + segmentedControl.height
     let navigationHeight = self.scrollToScaleDownProfileIconDistance
-    let threshold = self.computeProfileHeaderViewFrame().originBottom - navigationHeight
+    let threshold = self.computeProfileHeaderViewFrame().lf_originBottom - navigationHeight
     
     if mainScrollView.contentOffset.y > threshold {
       self.mainScrollView.setContentOffset(CGPoint(x: 0, y: threshold), animated: false)
@@ -489,7 +463,26 @@ extension TwitterProfileViewController {
 }
 
 extension CGRect {
-  var originBottom: CGFloat {
+  var lf_originBottom: CGFloat {
     return self.origin.y + self.height
+  }
+}
+
+// MARK: Public interfaces
+extension TwitterProfileViewController {
+  func numberOfSegments() -> Int {
+    return 0
+  }
+  
+  func segmentTitle(forSegment index: Int) -> String {
+    return ""
+  }
+  
+  func prepareForLayout() {
+    /* to be override */
+  }
+  
+  func scrollView(forSegment index: Int) -> UIScrollView {
+    return UITableView.init(frame: CGRect.zero, style: .grouped)
   }
 }

@@ -13,6 +13,8 @@ class TwitterProfileHeaderView: UIView {
   @IBOutlet weak var iconHeightConstraint: NSLayoutConstraint!
   @IBOutlet weak var titleLabel: UILabel!
   @IBOutlet weak var usernameLabel: UILabel!
+  @IBOutlet weak var iconImageView: UIImageView!
+  @IBOutlet weak var locationLabel: UILabel!
   
   let maxHeight: CGFloat = 80
   let minHeight: CGFloat = 50
