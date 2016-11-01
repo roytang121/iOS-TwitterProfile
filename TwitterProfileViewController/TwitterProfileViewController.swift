@@ -39,10 +39,7 @@ class TwitterProfileViewController: UIViewController {
     case .photos:
       return self.photosTableView
     case .favorites:
-      return self.favoritesTableView
-    default:
-      return self.tweetTableView
-    }
+      return self.favoritesTableView    }
   }
   
   
@@ -65,6 +62,10 @@ class TwitterProfileViewController: UIViewController {
   var segmentedControlContainer: UIView!
   
   var navigationDetailLabel: UILabel!
+  
+  var debugTextView: UILabel!
+  
+  var shouldUpdateScrollViewContentFrame = false
 
   override func viewDidLoad() {
     super.viewDidLoad()
@@ -74,25 +75,31 @@ class TwitterProfileViewController: UIViewController {
     self.prepareViews()
     
     self.setupTables()
+    
+    shouldUpdateScrollViewContentFrame = true
   }
   
   override func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
-    // configure layout frames
-    self.stickyHeaderContainerView.frame = self.computeStickyHeaderContainerViewFrame()
-    
-    self.profileHeaderView.frame = self.computeProfileHeaderViewFrame()
-    
-    self.segmentedControlContainer.frame = self.computeSegmentedControlContainerFrame()
-    
-    self.tweetTableView.frame = self.computeTableViewFrame(tableView: tweetTableView)
-    self.photosTableView.frame = self.computeTableViewFrame(tableView: photosTableView)
-    self.favoritesTableView.frame = self.computeTableViewFrame(tableView: favoritesTableView)
-    
-    self.updateMainScrollViewFrame()
-    
-    self.mainScrollView.scrollIndicatorInsets = computeMainScrollViewIndicatorInsets()
+    if self.shouldUpdateScrollViewContentFrame {
+      // configure layout frames
+      self.stickyHeaderContainerView.frame = self.computeStickyHeaderContainerViewFrame()
+      
+      self.profileHeaderView.frame = self.computeProfileHeaderViewFrame()
+      
+      self.segmentedControlContainer.frame = self.computeSegmentedControlContainerFrame()
+      
+      self.tweetTableView.frame = self.computeTableViewFrame(tableView: tweetTableView)
+      self.photosTableView.frame = self.computeTableViewFrame(tableView: photosTableView)
+      self.favoritesTableView.frame = self.computeTableViewFrame(tableView: favoritesTableView)
+      
+      self.updateMainScrollViewFrame()
+      
+      self.mainScrollView.scrollIndicatorInsets = computeMainScrollViewIndicatorInsets()
+      
+      self.shouldUpdateScrollViewContentFrame = false
+    }
   }
 
   override func didReceiveMemoryWarning() {
@@ -169,6 +176,9 @@ extension TwitterProfileViewController {
       make.bottom.equalTo(_navigationDetailLabel.snp.top).offset(4)
     }
     
+    // preset the navigation title and detail at progress=0 position
+    animateNaivationTitleAt(progress: 0)
+    
     // ProfileHeaderView
     if let _profileHeaderView = Bundle.main.loadNibNamed("TwitterProfileHeaderView", owner: self, options: nil)?.first as? TwitterProfileHeaderView {
       _mainScrollView.addSubview(_profileHeaderView)
@@ -215,6 +225,8 @@ extension TwitterProfileViewController {
     let _favoritesTableView = UITableView(frame: _mainScrollView.bounds, style: .plain)
     _mainScrollView.addSubview(_favoritesTableView)
     self.favoritesTableView = _favoritesTableView
+    
+    self.showDebugInfo()
   }
   
   func setupTables() {
@@ -273,8 +285,8 @@ extension TwitterProfileViewController {
 extension TwitterProfileViewController: UIScrollViewDelegate {
   func scrollViewDidScroll(_ scrollView: UIScrollView) {
     
-    
     let contentOffset = scrollView.contentOffset
+    self.debugContentOffset(contentOffset: contentOffset)
     
     // sticky headerCover
     if contentOffset.y <= 0 {
@@ -283,7 +295,11 @@ extension TwitterProfileViewController: UIScrollViewDelegate {
       let newHeight = abs(contentOffset.y) + self.stickyheaderContainerViewHeight
       
       // adjust stickyHeader frame
-      self.stickyHeaderContainerView.frame = CGRect(x: 0, y: contentOffset.y, width: mainScrollView.bounds.width, height: newHeight)
+      self.stickyHeaderContainerView.frame = CGRect(
+        x: 0,
+        y: contentOffset.y,
+        width: mainScrollView.bounds.width,
+        height: newHeight)
       
       // blurring effect amplitude
       self.blurEffectView.alpha = min(1, bounceProgress * 2)
@@ -436,13 +452,39 @@ extension TwitterProfileViewController {
     self.updateMainScrollViewFrame()
     
     // auto scroll to top if mainScrollView.contentOffset > navigationHeight + segmentedControl.height
-    let navigationFrame = self.computeNavigationFrame()
-    let navigationHeight = navigationFrame.height - abs(navigationFrame.origin.y)
+    let navigationHeight = self.scrollToScaleDownProfileIconDistance
     let threshold = self.computeProfileHeaderViewFrame().originBottom - navigationHeight
     
     if mainScrollView.contentOffset.y > threshold {
       self.mainScrollView.setContentOffset(CGPoint(x: 0, y: threshold), animated: false)
     }
+  }
+}
+
+extension TwitterProfileViewController {
+  
+  var debugMode: Bool {
+    return false
+  }
+  
+  func showDebugInfo() {
+    if debugMode {
+      self.debugTextView = UILabel()
+      debugTextView.text = "debug mode: on"
+      debugTextView.backgroundColor = UIColor.white
+      debugTextView.sizeToFit()
+      
+      self.view.addSubview(debugTextView)
+      
+      debugTextView.snp.makeConstraints({ (make) in
+        make.right.equalTo(self.view.snp.right).inset(16)
+        make.top.equalTo(self.view.snp.top).inset(16)
+      })
+    }
+  }
+  
+  func debugContentOffset(contentOffset: CGPoint) {
+    self.debugTextView?.text = "\(contentOffset)"
   }
 }
 
