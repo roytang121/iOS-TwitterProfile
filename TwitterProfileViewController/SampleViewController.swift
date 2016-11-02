@@ -15,6 +15,9 @@ class SampleViewController: TwitterProfileViewController {
   var photosTableView: UITableView!
   var favoritesTableView: UITableView!
   
+  var custom: UIView!
+  var label: UILabel!
+  
   
   override func numberOfSegments() -> Int {
     return 2
@@ -42,7 +45,7 @@ class SampleViewController: TwitterProfileViewController {
     super.viewDidLoad()
     
     self.locationString = "Hong Kong"
-    self.username = "memem"
+    self.username = "memem"    
   }
   
   override func scrollView(forSegment index: Int) -> UIScrollView {

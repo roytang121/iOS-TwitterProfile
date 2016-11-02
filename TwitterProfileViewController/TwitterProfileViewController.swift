@@ -18,7 +18,12 @@ open class TwitterProfileViewController: UIViewController {
   
   open let scrollToScaleDownProfileIconDistance: CGFloat = 60
   
-  open let profileHeaderViewHeight: CGFloat = 160
+  open var profileHeaderViewHeight: CGFloat = 160 {
+    didSet {
+      //self.view.setNeedsLayout()
+      //self.view.layoutIfNeeded()
+    }
+  }
   
   open let segmentedControlContainerHeight: CGFloat = 46
   
@@ -108,7 +113,11 @@ open class TwitterProfileViewController: UIViewController {
   override open func viewDidLayoutSubviews() {
     super.viewDidLayoutSubviews()
     
+    print(profileHeaderView.sizeThatFits(self.mainScrollView.bounds.size))
+    self.profileHeaderViewHeight = profileHeaderView.sizeThatFits(self.mainScrollView.bounds.size).height
+    
     if self.shouldUpdateScrollViewContentFrame {
+      
       // configure layout frames
       self.stickyHeaderContainerView.frame = self.computeStickyHeaderContainerViewFrame()
       
@@ -219,7 +228,7 @@ extension TwitterProfileViewController {
     
     
     // Segmented Control Container
-    let _segmentedControlContainer = UIView()
+    let _segmentedControlContainer = UIView.init(frame: CGRect.init(x: 0, y: 0, width: mainScrollView.bounds.width, height: 100))
     _segmentedControlContainer.backgroundColor = UIColor.white
     _mainScrollView.addSubview(_segmentedControlContainer)
     self.segmentedControlContainer = _segmentedControlContainer
@@ -240,8 +249,8 @@ extension TwitterProfileViewController {
     
     _segmentedControl.snp.makeConstraints { (make) in
 //      make.edges.equalTo(_segmentedControlContainer).inset(UIEdgeInsetsMake(8, 16, 8, 16))
-      make.leading.equalTo(_segmentedControlContainer.snp.leading).inset(8)
-      make.right.equalTo(_segmentedControlContainer.snp.right).inset(8)
+      make.width.equalToSuperview().offset(-16)
+      make.centerX.equalToSuperview()
       make.centerY.equalTo(_segmentedControlContainer.snp.centerY)
     }
     

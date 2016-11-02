@@ -15,6 +15,8 @@ class TwitterProfileHeaderView: UIView {
   @IBOutlet weak var usernameLabel: UILabel!
   @IBOutlet weak var iconImageView: UIImageView!
   @IBOutlet weak var locationLabel: UILabel!
+  @IBOutlet weak var contentView: UIView!
+  @IBOutlet weak var descriptionLabel: UILabel!
   
   let maxHeight: CGFloat = 80
   let minHeight: CGFloat = 50
@@ -35,5 +37,13 @@ class TwitterProfileHeaderView: UIView {
     let height = max(maxHeight - (maxHeight - minHeight) * t, minHeight)
     
     iconHeightConstraint.constant = height
+  }
+  
+  override func sizeThatFits(_ size: CGSize) -> CGSize {
+    descriptionLabel.sizeToFit()
+    let bottomFrame = descriptionLabel.frame
+    let iSize = descriptionLabel.systemLayoutSizeFitting(UILayoutFittingCompressedSize)
+    let resultSize = CGSize.init(width: size.width, height: bottomFrame.origin.y + iSize.height)
+    return resultSize
   }
 }
