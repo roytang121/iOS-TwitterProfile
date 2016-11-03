@@ -1,31 +1,29 @@
-![iOS-TwitterProfile](https://github.com/roytang121/iOS-TwitterProfile/blob/master/img/twitterProfile.png?raw=true)
+# LFTwitterProfile
 
-A complete guide to implement the Twitter iOS App Profile UI in Swift.  This project mimics the elegant Twitter Profile User Interface design on iOS with a detailed guide of how I implemented each feature.
-> This may not (and most probably not) be the same way as the Twitter app actually implements. I am just using my own way trying to mimic their user interface.
+[![CI Status](http://img.shields.io/travis/Roy Tang/LFTwitterProfile.svg?style=flat)](https://travis-ci.org/Roy Tang/LFTwitterProfile)
+[![Version](https://img.shields.io/cocoapods/v/LFTwitterProfile.svg?style=flat)](http://cocoapods.org/pods/LFTwitterProfile)
+[![License](https://img.shields.io/cocoapods/l/LFTwitterProfile.svg?style=flat)](http://cocoapods.org/pods/LFTwitterProfile)
+[![Platform](https://img.shields.io/cocoapods/p/LFTwitterProfile.svg?style=flat)](http://cocoapods.org/pods/LFTwitterProfile)
 
+## Example
 
-
-## Preview
-![Video Demo](https://github.com/roytang121/iOS-TwitterProfile/blob/master/img/screencap_1.gif?raw=true)
-
-## Implementation guide
-I shared a blog on [Medium talking about the design concepts of this project](https://medium.com/@yipyipisyip/swift-%EF%B8%8F-implementing-twitter-ios-app-ui-74c8a8cd0ff3).
-
-## Features
-- Sticky Profile Header with interactive blurring animation
-- Interactive layout changes when scrolling
-- **Multiple** UITableView (UICollectionView, UIScrollView, etc...) embedding in **ONE** UIScrollView, paging controlled by UISegmentedControl
-  - Dynamically changing `scrollview.contentsize` with respect to child tableview contents 
-  - UIScrollView Indicator offset
-  - Touch handling with UIScrollView + UIButtons
-
-## Why I made this guide ? 
-> Understand (and implement) Twitter app's elegant user interface is fun. 
-
-## Any third-party libraries used ?
-> I tried to avoid using third-party libraries for this guide to keep it clean and easy to understand. Only [SnapKit](https://github.com/SnapKit/SnapKit) is being used because I believe it should replace the built-in AutoLayout system in every project.
+To run the example project, clone the repo, and run `pod install` from the Example directory first.
 
 ## Requirements
-- Swift 3
-- Xcode 8
-- Cocoapods 1.0.1
+
+## Installation
+
+LFTwitterProfile is available through [CocoaPods](http://cocoapods.org). To install
+it, simply add the following line to your Podfile:
+
+```ruby
+pod "LFTwitterProfile"
+```
+
+## Author
+
+Roy Tang, me@roytang.me
+
+## License
+
+LFTwitterProfile is available under the MIT license. See the LICENSE file for more info.
