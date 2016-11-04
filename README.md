@@ -23,6 +23,8 @@ pod "LFTwitterProfile"
 ```
 
 ## Usage
+
+#### Basic
 Making your Twitter-like Profile viewController is as simple as extending `TwitterProfileViewController`
 ```swift
 class MyProfileViewController: TwitterProfileViewController {
@@ -42,7 +44,9 @@ class MyProfileViewController: TwitterProfileViewController {
 | `scrollView(forSegment index: Int) -> UIScrollView` | override to return UIScrollView (UITableView, UICollectionView, etc) in corresponding segment index |
 | `username: String`  | user name displayed in profile header and navigation  |
 | `profileImage: UIImage`  | user icon |
+| `coverImage: UIImage`  | cover image shown in sticky header |
 | `locationString: String`  | location displayed under username |
+| `descriptionString: String` | content under location, dynamically sized, profileHeader will adjust it's height by the content from descriptionString |
 
 #### UIScrollView, UITableView, UICollectionView, ...
 `LFTwitterProfile` allows you to use any child of `UIScrollView`, *essentially any child that will provide with correct `contentSize` property*, to be shown as a tab under `UISegmentedControl`.
@@ -77,6 +81,10 @@ override func scrollView(forSegment index: Int) -> UIScrollView {
   }
 }
 ```
+## TODO
+- More user interface customization
+- Better documentation
+- Renaming (right now is quite messy for pods and projects and classes, I changed my mind several times about the naming when working on this project)
 
 ## Requirements
 - Swift 3
