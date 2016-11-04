@@ -269,6 +269,7 @@ extension TwitterProfileViewController {
     for index in 0..<numberOfSegments() {
       let scrollView = self.scrollView(forSegment: index)
       self.scrollViews.append(scrollView)
+      scrollView.isHidden = (index > 0)
       _mainScrollView.addSubview(scrollView)
     }
     

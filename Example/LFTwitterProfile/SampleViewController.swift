@@ -77,12 +77,12 @@ extension SampleViewController: UITableViewDelegate, UITableViewDataSource {
     
     self.photosTableView.delegate = self
     self.photosTableView.dataSource = self
-    self.photosTableView.isHidden = true
+    //self.photosTableView.isHidden = true
     self.photosTableView.register(UITableViewCell.self, forCellReuseIdentifier: "photoCell")
     
     self.favoritesTableView.delegate = self
     self.favoritesTableView.dataSource = self
-    self.favoritesTableView.isHidden = true
+    //self.favoritesTableView.isHidden = true
     self.favoritesTableView.register(UITableViewCell.self, forCellReuseIdentifier: "favCell")
   }
   
