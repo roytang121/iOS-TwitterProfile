@@ -27,7 +27,8 @@ Making your Twitter-like Profile viewController is as simple as extending `Twitt
 ```swift
 class MyProfileViewController: TwitterProfileViewController {
   /* ... overrides ... */
-}```
+}
+```
 
 #### Customization
 
